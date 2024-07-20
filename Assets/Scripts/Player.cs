@@ -2,18 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class Unit {
+    public GameObject unit;
+    public Sprite selectedSprite;
+    public Sprite unselectedSprite;
+}
+
 public class Player : MonoBehaviour {
-
-    [SerializeField] private GameObject warrior;
-    [SerializeField] private GameObject wizard;
-
+    [SerializeField] private Unit[] units;
     [SerializeField] private float fullMoveTime = 0.6f;
 
-    private GameObject currUnit;
+    private int currUnitIndex;
+    private Unit CurrUnit {
+        get { return units[currUnitIndex]; }
+    }
+    
     private bool isMoving;
 
     void Awake() {
-        currUnit = warrior;
+        currUnitIndex = 0;
+
+        SpriteRenderer currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
+        currUnitSr.sprite = CurrUnit.selectedSprite;
     }
 
     void Update() {
@@ -22,7 +33,7 @@ public class Player : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.P)) {
-            currUnit = currUnit == warrior ? wizard : warrior;
+            SwitchUnits();
         }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -43,18 +54,33 @@ public class Player : MonoBehaviour {
     IEnumerator Move(Vector3 dir) {
         isMoving = true;
 
-        Vector3 startPos = currUnit.transform.position;
+        Vector3 startPos = CurrUnit.unit.transform.position;
         Vector3 endPos = startPos + dir;
+
+        if (TilemapManager.instance.IsBlockedTile(endPos)) {
+            isMoving = false;
+            yield break;
+        }
 
         float t = 0;
         while (t < fullMoveTime) {
-            currUnit.transform.position = Vector3.Lerp(startPos, endPos, t / fullMoveTime);
+            CurrUnit.unit.transform.position = Vector3.Lerp(startPos, endPos, t / fullMoveTime);
             yield return null;
             t += Time.deltaTime;
         }
 
-        currUnit.transform.position = endPos;
+        CurrUnit.unit.transform.position = endPos;
 
         isMoving = false;
+    }
+
+    void SwitchUnits() {
+        SpriteRenderer currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
+        currUnitSr.sprite = CurrUnit.unselectedSprite;
+
+        currUnitIndex = (currUnitIndex + 1) % units.Length;
+
+        currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
+        currUnitSr.sprite = CurrUnit.selectedSprite;
     }
 }
