@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
     }
     
     private bool isMoving;
+    private bool won;
 
     void Awake() {
         currUnitIndex = 0;
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        if (isMoving) {
+        if (isMoving || won) {
             return;
         }
 
@@ -72,6 +73,12 @@ public class Player : MonoBehaviour {
         CurrUnit.unit.transform.position = endPos;
 
         isMoving = false;
+
+        if (TilemapManager.instance.IsGoalTile(endPos)) {
+            won = true;
+
+            EventBus.instance.TriggerOnLevelComplete();
+        }
     }
 
     void SwitchUnits() {
