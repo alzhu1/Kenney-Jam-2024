@@ -35,6 +35,10 @@ public class Player : MonoBehaviour {
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.R)) {
+            EventBus.instance.TriggerOnLevelRestart();
+        }
+
         if (Input.GetKeyDown(KeyCode.P)) {
             SwitchUnits();
         }
@@ -52,11 +56,10 @@ public class Player : MonoBehaviour {
         // Attempt action first, otherwise move
 
         if (!dir.Equals(Vector3.zero)) {
-            if (!acted && Input.GetKey(KeyCode.Space)) {
-                // Start coroutine for an action
-                StartCoroutine(PerformAction(dir));
-            } else {
+            if (!Input.GetKey(KeyCode.Space)) {
                 StartCoroutine(Move(dir));
+            } else if (!acted) {
+                StartCoroutine(PerformAction(dir));
             }
         } else {
             acted = false;

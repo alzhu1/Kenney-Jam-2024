@@ -10,7 +10,6 @@ public class LevelLoader : MonoBehaviour {
     private Transition[] transitions;
 
     void Awake() {
-        Debug.Log("Awakee");
         if (instance == null) {
             instance = this;
             Init();
@@ -24,10 +23,12 @@ public class LevelLoader : MonoBehaviour {
 
     void Start() {
         EventBus.instance.OnLevelComplete += ReceiveLevelCompleteEvent;
+        EventBus.instance.OnLevelRestart += ReceiveLevelRestartEvent;
     }
 
     void OnDestroy() {
         EventBus.instance.OnLevelComplete -= ReceiveLevelCompleteEvent;
+        EventBus.instance.OnLevelRestart -= ReceiveLevelRestartEvent;
     }
 
     void Init() {
@@ -35,14 +36,14 @@ public class LevelLoader : MonoBehaviour {
         StartCoroutine(StartLevel());
     }
 
-    void Update() {
-        
-    }
-
     void ReceiveLevelCompleteEvent() {
         int currIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = (currIndex + 1) % SceneManager.sceneCountInBuildSettings;
         StartCoroutine(LoadLevel(nextIndex));
+    }
+
+    void ReceiveLevelRestartEvent() {
+        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex));
     }
 
     IEnumerator StartLevel() {
