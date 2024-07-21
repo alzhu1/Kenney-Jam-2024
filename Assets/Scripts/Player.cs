@@ -16,9 +16,10 @@ public class Player : MonoBehaviour {
     private int currUnitIndex;
     private Unit CurrUnit {
         get { return units[currUnitIndex]; }
-    }
+    } 
     
     private bool isMoving;
+    private bool acted;
     private bool won;
 
     void Awake() {
@@ -47,9 +48,16 @@ public class Player : MonoBehaviour {
         else if (vertical > 0) { dir = Vector3.up; }
         else if (vertical < 0) { dir = Vector3.down; }
 
+        // Attempt action first, otherwise move
+
         if (!dir.Equals(Vector3.zero)) {
-            StartCoroutine(Move(dir));
-        }
+            if (!acted && Input.GetKey(KeyCode.Space)) {
+                // Start coroutine for an action
+                StartCoroutine(PerformAction(dir));
+            } else {
+                StartCoroutine(Move(dir));
+            }
+        } 
     }
 
     IEnumerator Move(Vector3 dir) {
@@ -79,6 +87,21 @@ public class Player : MonoBehaviour {
 
             EventBus.instance.TriggerOnLevelComplete();
         }
+    }
+
+    IEnumerator PerformAction(Vector3 dir) {
+        isMoving = true;
+
+        GameObject weapon = CurrUnit.unit.transform.GetChild(0).gameObject;
+        SpriteRenderer weaponSr = weapon.GetComponent<SpriteRenderer>();
+
+        weapon.transform.localPosition = dir;
+        weaponSr.enabled = true;
+
+        yield return new WaitForSeconds(1f);
+
+        weaponSr.enabled = false;
+        isMoving = false;
     }
 
     void SwitchUnits() {
