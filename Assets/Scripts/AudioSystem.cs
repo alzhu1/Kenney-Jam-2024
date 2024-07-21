@@ -55,6 +55,7 @@ public class AudioSystem : MonoBehaviour {
         EventBus.instance.OnLevelComplete += ReceiveLevelCompleteEvent;
         EventBus.instance.OnPlayerMove += ReceivePlayerMoveEvent;
         EventBus.instance.OnPlayerAction += ReceivePlayerActionEvent;
+        EventBus.instance.OnPlayerSwitch += ReceivePlayerSwitchEvent;
     }
 
     void OnDestroy() {
@@ -62,6 +63,8 @@ public class AudioSystem : MonoBehaviour {
         EventBus.instance.OnLevelComplete -= ReceiveLevelCompleteEvent;
         EventBus.instance.OnPlayerMove -= ReceivePlayerMoveEvent;
         EventBus.instance.OnPlayerAction -= ReceivePlayerActionEvent;
+        EventBus.instance.OnPlayerSwitch -= ReceivePlayerSwitchEvent;
+
     }
 
     Sound Play(string name) {
@@ -84,5 +87,9 @@ public class AudioSystem : MonoBehaviour {
 
     void ReceivePlayerActionEvent(bool hit) {
         Play(hit ? "Hit" : "Action");
+    }
+
+    void ReceivePlayerSwitchEvent() {
+        Play("Switch");
     }
 }

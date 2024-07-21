@@ -18,6 +18,7 @@ public class EventBus : MonoBehaviour {
 
     public event Action OnPlayerMove = delegate {};
     public event Action<bool> OnPlayerAction = delegate {};
+    public event Action OnPlayerSwitch = delegate {};
 
     void Awake() {
         if (instance == null) {
@@ -43,6 +44,10 @@ public class EventBus : MonoBehaviour {
 
     public void TriggerOnPlayerAction(bool hit) {
         OnPlayerAction?.Invoke(hit);
+    }
+
+    public void TriggerOnPlayerSwitch() {
+        OnPlayerSwitch?.Invoke();
     }
 
     // public void TriggerOnStart(LevelManager lm) {

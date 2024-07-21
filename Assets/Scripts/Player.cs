@@ -13,6 +13,9 @@ public class Player : MonoBehaviour {
     [SerializeField] private Unit[] units;
     [SerializeField] private float fullMoveTime = 0.6f;
     [SerializeField] private float attackTime = 0.1f;
+    [SerializeField] private float switchTime = 0.1f;
+
+    [SerializeField] private GameObject soul;
 
     private int currUnitIndex;
     private Unit CurrUnit {
@@ -40,7 +43,7 @@ public class Player : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.P)) {
-            SwitchUnits();
+            StartCoroutine(Switch());
         }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -64,6 +67,35 @@ public class Player : MonoBehaviour {
         } else {
             acted = false;
         }
+    }
+
+    IEnumerator Switch() {
+        isMoving = true;
+
+        SpriteRenderer currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
+        currUnitSr.sprite = CurrUnit.unselectedSprite;
+
+        SpriteRenderer soulSr = soul.GetComponent<SpriteRenderer>();
+        soulSr.enabled = true;
+        soulSr.transform.position = CurrUnit.unit.transform.position;
+
+        currUnitIndex = (currUnitIndex + 1) % units.Length;
+        EventBus.instance.TriggerOnPlayerSwitch();
+
+        Vector3 startPos = soul.transform.position;
+        Vector3 endPos = CurrUnit.unit.transform.position;
+        float t = 0;
+        while (t < switchTime) {
+            soul.transform.position = Vector3.Lerp(startPos, endPos, t / switchTime);
+            yield return null;
+            t += Time.deltaTime;
+        }
+        soul.transform.position = endPos;
+
+        currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
+        currUnitSr.sprite = CurrUnit.selectedSprite;
+        soulSr.enabled = false;
+        isMoving = false;
     }
 
     IEnumerator Move(Vector3 dir) {
@@ -120,15 +152,5 @@ public class Player : MonoBehaviour {
         yield return new WaitForSeconds(attackTime);
         weaponSr.enabled = false;
         isMoving = false;
-    }
-
-    void SwitchUnits() {
-        SpriteRenderer currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
-        currUnitSr.sprite = CurrUnit.unselectedSprite;
-
-        currUnitIndex = (currUnitIndex + 1) % units.Length;
-
-        currUnitSr = CurrUnit.unit.GetComponent<SpriteRenderer>();
-        currUnitSr.sprite = CurrUnit.selectedSprite;
     }
 }
