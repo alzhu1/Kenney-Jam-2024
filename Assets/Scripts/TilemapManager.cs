@@ -10,9 +10,16 @@ public class TilemapManager : MonoBehaviour {
     [SerializeField] private Tilemap goal;
     [SerializeField] private Tilemap enemies;
 
+    private int enemyCount;
+
     // Singleton that is re-initialized every scene
     void Awake() {
         instance = this;
+
+        Vector3Int baseRange = new Vector3Int(1, 1, 0);
+        enemyCount = enemies.GetTilesRangeCount(baseRange * -100, baseRange * 100);
+
+        goal.gameObject.SetActive(false);
     }
 
     public bool IsBlockedTile(Vector3 pos) {
@@ -24,11 +31,19 @@ public class TilemapManager : MonoBehaviour {
     public bool IsGoalTile(Vector3 pos) {
         Vector3Int posInt = Vector3Int.FloorToInt(pos);
 
-        return goal.GetTile(posInt) != null;
+        return goal.gameObject.activeInHierarchy && goal.GetTile(posInt) != null;
     }
 
     public void DestroyEnemy(Vector3 pos) {
         Vector3Int posInt = Vector3Int.FloorToInt(pos);
-        enemies.SetTile(posInt, null);
+
+        if (enemies.GetTile(posInt) != null) {
+            enemies.SetTile(posInt, null);
+            enemyCount--;
+
+            if (enemyCount == 0) {
+                goal.gameObject.SetActive(true);
+            }
+        }
     }
 }
