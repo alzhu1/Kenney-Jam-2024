@@ -95,7 +95,14 @@ public class Player : MonoBehaviour {
         GameObject weapon = CurrUnit.unit.transform.GetChild(0).gameObject;
         SpriteRenderer weaponSr = weapon.GetComponent<SpriteRenderer>();
 
+        float rotation = 0f;
+        if (dir.Equals(Vector3.up)) { rotation = 0f; }
+        else if (dir.Equals(Vector3.left)) { rotation = 90f; }
+        else if (dir.Equals(Vector3.down)) { rotation = 180f; }
+        else if (dir.Equals(Vector3.right)) { rotation = -90f; }
+
         weapon.transform.localPosition = dir;
+        weapon.transform.localEulerAngles = Vector3.forward * rotation;
         weaponSr.enabled = true;
 
         yield return new WaitForSeconds(1f);
