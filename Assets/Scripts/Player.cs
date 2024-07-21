@@ -12,6 +12,7 @@ public class Unit {
 public class Player : MonoBehaviour {
     [SerializeField] private Unit[] units;
     [SerializeField] private float fullMoveTime = 0.6f;
+    [SerializeField] private float attackTime = 0.1f;
 
     private int currUnitIndex;
     private Unit CurrUnit {
@@ -57,7 +58,9 @@ public class Player : MonoBehaviour {
             } else {
                 StartCoroutine(Move(dir));
             }
-        } 
+        } else {
+            acted = false;
+        }
     }
 
     IEnumerator Move(Vector3 dir) {
@@ -91,6 +94,7 @@ public class Player : MonoBehaviour {
 
     IEnumerator PerformAction(Vector3 dir) {
         isMoving = true;
+        acted = true;
 
         GameObject weapon = CurrUnit.unit.transform.GetChild(0).gameObject;
         SpriteRenderer weaponSr = weapon.GetComponent<SpriteRenderer>();
@@ -105,8 +109,9 @@ public class Player : MonoBehaviour {
         weapon.transform.localEulerAngles = Vector3.forward * rotation;
         weaponSr.enabled = true;
 
-        yield return new WaitForSeconds(1f);
+        TilemapManager.instance.DestroyEnemy(weapon.transform.position);
 
+        yield return new WaitForSeconds(attackTime);
         weaponSr.enabled = false;
         isMoving = false;
     }

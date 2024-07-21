@@ -8,6 +8,7 @@ public class TilemapManager : MonoBehaviour {
 
     [SerializeField] private Tilemap blocks;
     [SerializeField] private Tilemap goal;
+    [SerializeField] private Tilemap enemies;
 
     // Singleton that is re-initialized every scene
     void Awake() {
@@ -17,12 +18,17 @@ public class TilemapManager : MonoBehaviour {
     public bool IsBlockedTile(Vector3 pos) {
         Vector3Int posInt = Vector3Int.FloorToInt(pos);
 
-        return blocks.GetTile(posInt) != null;
+        return blocks.GetTile(posInt) != null || enemies.GetTile(posInt) != null;
     }
 
     public bool IsGoalTile(Vector3 pos) {
         Vector3Int posInt = Vector3Int.FloorToInt(pos);
 
         return goal.GetTile(posInt) != null;
+    }
+
+    public void DestroyEnemy(Vector3 pos) {
+        Vector3Int posInt = Vector3Int.FloorToInt(pos);
+        enemies.SetTile(posInt, null);
     }
 }
