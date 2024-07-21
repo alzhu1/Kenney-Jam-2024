@@ -16,6 +16,9 @@ public class EventBus : MonoBehaviour {
     public event Action OnLevelComplete = delegate {};
     public event Action OnLevelRestart = delegate {};
 
+    public event Action OnPlayerMove = delegate {};
+    public event Action<bool> OnPlayerAction = delegate {};
+
     void Awake() {
         if (instance == null) {
             instance = this;
@@ -32,6 +35,14 @@ public class EventBus : MonoBehaviour {
 
     public void TriggerOnLevelRestart() {
         OnLevelRestart?.Invoke();
+    }
+
+    public void TriggerOnPlayerMove() {
+        OnPlayerMove?.Invoke();
+    }
+
+    public void TriggerOnPlayerAction(bool hit) {
+        OnPlayerAction?.Invoke(hit);
     }
 
     // public void TriggerOnStart(LevelManager lm) {

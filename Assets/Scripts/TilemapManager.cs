@@ -34,7 +34,7 @@ public class TilemapManager : MonoBehaviour {
         return goal.gameObject.activeInHierarchy && goal.GetTile(posInt) != null;
     }
 
-    public void DestroyEnemy(Vector3 pos) {
+    public bool DestroyEnemy(Vector3 pos) {
         Vector3Int posInt = Vector3Int.FloorToInt(pos);
 
         if (enemies.GetTile(posInt) != null) {
@@ -44,6 +44,10 @@ public class TilemapManager : MonoBehaviour {
             if (enemyCount == 0) {
                 goal.gameObject.SetActive(true);
             }
+
+            return true;
         }
+
+        return false;
     }
 }

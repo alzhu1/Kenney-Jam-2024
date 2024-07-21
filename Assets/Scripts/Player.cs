@@ -77,6 +77,8 @@ public class Player : MonoBehaviour {
             yield break;
         }
 
+        EventBus.instance.TriggerOnPlayerMove();
+
         float t = 0;
         while (t < fullMoveTime) {
             CurrUnit.unit.transform.position = Vector3.Lerp(startPos, endPos, t / fullMoveTime);
@@ -112,7 +114,8 @@ public class Player : MonoBehaviour {
         weapon.transform.localEulerAngles = Vector3.forward * rotation;
         weaponSr.enabled = true;
 
-        TilemapManager.instance.DestroyEnemy(weapon.transform.position);
+        bool hit = TilemapManager.instance.DestroyEnemy(weapon.transform.position);
+        EventBus.instance.TriggerOnPlayerAction(hit);
 
         yield return new WaitForSeconds(attackTime);
         weaponSr.enabled = false;
