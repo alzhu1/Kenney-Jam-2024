@@ -10,6 +10,7 @@ public class ScreenTransition : Transition {
 
     void Awake() {
         transitionImage = GetComponent<Image>();
+        transitionImage.rectTransform.anchoredPosition3D = Vector3.zero;
         ready = true;
     }
 
